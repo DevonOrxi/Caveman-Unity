@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D rb;
 	private SpriteRenderer sr;
 	private bool isGrounded = false;
+	private bool isFirstAttackFrame = false;
 
 	public GameObject[] feetRef;
 
@@ -18,7 +19,9 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void Update () {
-		
+		animator.SetBool ("FirstAttackFrame", false);
+
+		Attack ();
 	}
 
 	void FixedUpdate() {
@@ -26,6 +29,13 @@ public class PlayerController : MonoBehaviour {
 		CheckGrounded ();
 		Jump ();
 		CheckFacing ();
+	}
+
+	void Attack() {
+		if (Input.GetKeyDown (KeyCode.X)) {
+			isFirstAttackFrame = true;
+			animator.SetBool ("FirstAttackFrame", true);
+		}
 	}
 
 	void Jump() {
@@ -48,7 +58,7 @@ public class PlayerController : MonoBehaviour {
 
 		rb.velocity = new Vector2 (resultantX, rb.velocity.y);
 		
-		animator.SetFloat ("SpeedX", Mathf.Abs(resultantX));
+		animator.SetFloat ("SpeedAbsX", Mathf.Abs(resultantX));
 	}
 
 	void CheckGrounded() {
