@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour {
 	private bool isFirstAttackFrame = false;
 
 	public GameObject[] feetRef;
+	public GameObject bonePrefab;
+	public GameObject weaponProjGroup;
 
 	void Start () {
 		animator = GetComponent<Animator> ();
@@ -21,14 +23,22 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
 		animator.SetBool ("FirstAttackFrame", false);
 
+		Jump ();
+
+
 		Attack ();
 	}
 
 	void FixedUpdate() {
 		HorizontalMovement ();
 		CheckGrounded ();
-		Jump ();
 		CheckFacing ();
+	}
+
+	void GenerateProjectile() {
+		GameObject p = Instantiate(bonePrefab, transform.position, transform.rotation, weaponProjGroup.transform);
+		ArcThrowable at = p.GetComponent<ArcThrowable> ();
+		at.SetArcForce (rb.velocity, sr.flipX);
 	}
 
 	void Attack() {
@@ -67,8 +77,9 @@ public class PlayerController : MonoBehaviour {
 		for (int i = 0; i < feetRef.Length; i++) {
 			GameObject g = feetRef [i];
 
-			if (Physics2D.Raycast (g.transform.position, Vector2.down).distance < 0.05)
+			if (Physics2D.Raycast (g.transform.position, Vector2.down).distance < 0.05f) {
 				isGrounded = true;
+			}
 		}
 
 		if (isGrounded)
