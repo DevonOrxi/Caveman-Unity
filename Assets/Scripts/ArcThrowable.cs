@@ -29,8 +29,8 @@ public class ArcThrowable : MonoBehaviour {
 
 	}
 
-	void OnCollisionEnter2D(Collision2D col) {
-		
-		Destroy (this);
+	void OnTriggerEnter2D(Collider2D col) {
+
+		Destroy (gameObject);
 	}
 }
