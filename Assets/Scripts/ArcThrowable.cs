@@ -30,6 +30,14 @@ public class ArcThrowable : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D col) {
+		
+		switch (col.gameObject.name) {
+		case "Trex":
+			TrexEnemyScript tes = col.gameObject.GetComponent<TrexEnemyScript> ();
+			tes.GetDamaged ();
+			Debug.Log ("OUCH!");
+			break;
+		}
 
 		Destroy (gameObject);
 	}
