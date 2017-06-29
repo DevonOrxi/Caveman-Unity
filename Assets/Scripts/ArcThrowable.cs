@@ -35,7 +35,6 @@ public class ArcThrowable : MonoBehaviour {
 		case "Trex":
 			TrexEnemyScript tes = col.gameObject.GetComponent<TrexEnemyScript> ();
 			tes.GetDamaged ();
-			Debug.Log ("OUCH!");
 			break;
 		}
 

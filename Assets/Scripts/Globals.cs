@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Globals  {
-	static readonly public float playerSpeedX = 150;
-	static readonly public float jumpForce = 240;
-	static readonly public float boneForceY = 220;
-	static readonly public float boneForceX = 120;
-	static readonly public float boneTorque = 1000;
+	static readonly public float playerSpeedX = 150f;
+	static readonly public float jumpForce = 240f;
+	static readonly public float recoilForce = 200f;
+	static readonly public float boneForceY = 220f;
+	static readonly public float boneForceX = 120f;
+	static readonly public float boneTorque = 1000f;
+	static readonly public float hurtTime = 0.8f;
 }

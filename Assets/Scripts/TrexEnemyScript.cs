@@ -6,7 +6,14 @@ public class TrexEnemyScript : BaseEnemyScript {
 
 	void Awake () {
 		hp = 3;
-		animator = GetComponent<Animator> ();
+		if (animator == null)
+			animator = GetComponent<Animator> ();
+		if (bc == null)
+			bc = GetComponent<BoxCollider2D> ();
+		if (rb == null)
+			rb = GetComponent<Rigidbody2D> ();
+		
+		animator.SetInteger ("Health", hp);
 		name = "Trex";
 	}
 
@@ -23,10 +30,5 @@ public class TrexEnemyScript : BaseEnemyScript {
 	}
 
 	void Attack () {
-	}
-
-	public override void StopHurting ()
-	{
-		base.StopHurting ();
 	}
 }
