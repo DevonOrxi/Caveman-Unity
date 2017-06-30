@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour {
 		animator = GetComponent<Animator> ();
 		rb = GetComponent<Rigidbody2D> ();
 		sr = GetComponent<SpriteRenderer> ();
-		blinkCoroutine = Blink (Globals.hurtTime);
 	}
 	
 	void Update () {
@@ -106,6 +105,8 @@ public class PlayerController : MonoBehaviour {
 		if (col.gameObject.tag == "Enemy" && !isDamaged) {
 			isDamaged = true;
 			animator.SetBool ("IsDamaged", true);
+
+			blinkCoroutine = Blink (Globals.hurtTime);
 			StartCoroutine(blinkCoroutine);
 
 			rb.AddForce((new Vector2(
