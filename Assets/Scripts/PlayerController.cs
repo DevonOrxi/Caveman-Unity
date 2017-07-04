@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -103,6 +104,7 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D col) {
 		if (col.gameObject.tag == "Enemy" && !isDamaged) {
+			hp--;
 			isDamaged = true;
 			animator.SetBool ("IsDamaged", true);
 
@@ -129,7 +131,15 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void StopHurting() {
-		isDamaged = false;
-		animator.SetBool ("IsDamaged", false);
+		if (hp > 0) {
+			isDamaged = false;
+			animator.SetBool ("IsDamaged", false);
+		} else {
+			animator.SetBool ("IsDying", true);
+		}
+	}
+
+	void LoseLife() {
+		SceneManager.LoadScene ("GameOver");
 	}
 }

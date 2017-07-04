@@ -10,21 +10,22 @@ public class EntityGenerator : MonoBehaviour {
 
 	void Awake () {
 		currentInstance = Instantiate (generatorPrefab, transform.position, transform.rotation, entityGroupRef);
-//		currentInstance.SetActive (false);
+		currentInstance.SetActive (false);
 	}
 
 	void OnTriggerEnter2D(Collider2D col) {
-//		if (col.tag == "AliveArea") {
-//			if (currentInstance == null)
-//				currentInstance = Instantiate (generatorPrefab, transform.position, transform.rotation, entityGroupRef);
-//			currentInstance.SetActive (true);
-//		}
+		if (col.tag == "AliveArea") {
+			if (currentInstance == null)
+				currentInstance = Instantiate (generatorPrefab, transform.position, transform.rotation, entityGroupRef);
+			else
+				currentInstance.SetActive (true);
+		}
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
-//		if (col.tag == "AliveArea") {
-//			if (currentInstance != null)
-//				currentInstance.SetActive (false);
-//		}
+		if (col.tag == "AliveArea") {
+			if (currentInstance != null)
+				currentInstance.SetActive (false);
+		}
 	}
 }
