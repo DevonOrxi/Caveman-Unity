@@ -24,8 +24,9 @@ public class EntityGenerator : MonoBehaviour {
 
 	void OnTriggerExit2D(Collider2D col) {
 		if (col.tag == "AliveArea") {
-			if (currentInstance != null)
+			if (currentInstance != null) {
 				currentInstance.SetActive (false);
+			}
 		}
 	}
 }

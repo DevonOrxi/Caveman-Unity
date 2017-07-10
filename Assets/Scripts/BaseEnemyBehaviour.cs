@@ -21,14 +21,17 @@ public class BaseEnemyScript : MonoBehaviour {
 	protected Animator animator;
 	protected BoxCollider2D bc;
 	protected Rigidbody2D rb;
+	protected SpriteRenderer sr;
 
-	void Awake () {
+	void Start () {
 		if (animator == null)
 			animator = GetComponent<Animator> ();
 		if (bc == null)
 			bc = GetComponent<BoxCollider2D> ();
 		if (rb == null)
 			rb = GetComponent<Rigidbody2D> ();
+		if (sr == null)
+			sr = GetComponent<SpriteRenderer> ();
 		
 		name = "Base";
 	}
