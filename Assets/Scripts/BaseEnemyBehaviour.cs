@@ -22,6 +22,9 @@ public class BaseEnemyScript : MonoBehaviour {
 	protected BoxCollider2D bc;
 	protected Rigidbody2D rb;
 	protected SpriteRenderer sr;
+	public EntityGenerator eg;
+	protected bool canDisableInstance = true;
+	public bool CanDisableInstance { get { return canDisableInstance; } }
 
 	void Start () {
 		if (animator == null)
@@ -39,7 +42,6 @@ public class BaseEnemyScript : MonoBehaviour {
 	public void GetDamaged() {
 		if (hp > 0) {
 			hp--;
-			Debug.Log (hp);
 			HurtLogic ();
 		}
 	}
@@ -47,20 +49,22 @@ public class BaseEnemyScript : MonoBehaviour {
 	public void GetDamaged(int damage) {
 		if (hp >= 0) {
 			hp -= damage;
-			Debug.Log (hp);
 			HurtLogic ();
 		}
 	}
 
-	public void HurtLogic() {
+	private void HurtLogic() {
 		if (hp >= 0) {
-			status = Status.Hurting;
 			animator.Play ("Hurt", -1, 0f);
 			animator.SetBool ("Hurt", true);
 			animator.SetInteger ("Health", hp);
+			rb.velocity = Vector2.zero;
+			animator.SetFloat ("SpeedAbsX", 0);
 
 			if (hp == 0)
 				status = Status.Dying;
+			else
+				status = Status.Hurting;
 		}
 	}
 
@@ -71,7 +75,14 @@ public class BaseEnemyScript : MonoBehaviour {
 		this.enabled = false;
 	}
 
-	void Update() {
-		prevStatus = status;
+	public void StopHurting() {
+		status = prevStatus;
+
+		if (status == Status.Roaming) {
+			rb.velocity = new Vector2 (Globals.trexSpeedX * (sr.flipX ? -1 : 1) * Time.deltaTime, 0);
+			animator.SetFloat ("SpeedAbsX", Mathf.Abs (rb.velocity.x));
+		}
+
+		animator.SetBool ("Hurt", false);
 	}
 }

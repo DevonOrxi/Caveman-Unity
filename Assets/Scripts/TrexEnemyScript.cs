@@ -5,11 +5,8 @@ using UnityEngine;
 public class TrexEnemyScript : BaseEnemyScript {
 
 	private bool roamLeft;
-	private bool canDisableInstance = true;
-	public bool CanDisableInstance { get { return canDisableInstance; } }
 	public GameObject leftAttackTrigger;
 	public GameObject rightAttackTrigger;
-	public EntityGenerator eg;
 
 	void Start () {
 		hp = 3;
@@ -33,6 +30,13 @@ public class TrexEnemyScript : BaseEnemyScript {
 	}
 	
 	void Update () {
+		if (status != Status.Hurting &&
+			status != Status.Dying &&
+			status != Status.Attacking &&
+			status != Status.Dead) {
+			prevStatus = status;
+		}
+
 		switch (status) {
 		case Status.Attacking:
 			break;
@@ -60,14 +64,20 @@ public class TrexEnemyScript : BaseEnemyScript {
 		leftAttackTrigger.SetActive (roamLeft);
 	}
 
-	//	POR QUÉ MIERDAS NECESITO PONERLE VELOCIDAD CADA FRAME?
 	void Roam() {
 		rb.velocity = new Vector2 (Globals.trexSpeedX * (roamLeft ? -1 : 1) * Time.deltaTime, 0);
 		animator.SetFloat ("SpeedAbsX", Mathf.Abs (rb.velocity.x));
 	}
 
-	void Attack () {
+	void StartAttack () {
 		status = Status.Attacking;
+		animator.SetBool ("FirstAttackFrame", true);
+
+	}
+
+	public void OpenAttackBox (){
+		GameObject playerDetector = roamLeft ? leftAttackTrigger : rightAttackTrigger;
+
 	}
 
 	void OnTriggerStay2D(Collider2D col) {
@@ -78,7 +88,7 @@ public class TrexEnemyScript : BaseEnemyScript {
 	void OnTriggerEnter2D(Collider2D col) {
 		if (col.tag == "StopSignal")
 			ChangeDirection ();
-		else if (col.tag == "AliveArea")
+		if (col.tag == "AliveArea")
 			this.canDisableInstance = false;
 	}
 

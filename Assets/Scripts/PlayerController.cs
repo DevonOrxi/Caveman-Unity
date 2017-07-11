@@ -103,7 +103,33 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D col) {
-		if (col.gameObject.tag == "Enemy" && !isDamaged) {
+		if (col.gameObject.tag == "Enemy") {
+
+			//	Meter esto en otra función
+			//	Usar Transform del collider
+			Vector2 recoilForce = new Vector2(
+				transform.position.x - col.transform.position.x,
+				transform.position.y - col.transform.position.y + 1);
+			GetDamaged (recoilForce);
+		}
+	}
+
+	public void GetDamaged(Vector2 rf) {
+		if (hp > 0) {
+			hp--;
+			HurtLogic (rf);
+		}
+	}
+
+	public void GetDamaged(Vector2 rf, int damage) {
+		if (hp >= 0) {
+			hp -= damage;
+			HurtLogic (rf);
+		}
+	}
+
+	private void HurtLogic(Vector2 rf) {
+		if (hp >= 0 && !isDamaged) {
 			hp--;
 			isDamaged = true;
 			animator.SetBool ("IsDamaged", true);
@@ -111,12 +137,19 @@ public class PlayerController : MonoBehaviour {
 			blinkCoroutine = Blink (Globals.hurtTime);
 			StartCoroutine(blinkCoroutine);
 
-			rb.AddForce((new Vector2(
-				transform.position.x - col.transform.position.x,
-				transform.position.y - col.transform.position.y + 1
-			).normalized * Globals.recoilForce));
+			rb.AddForce(rf.normalized * Globals.recoilForce);
 
 			Invoke ("StopHurting", Globals.hurtTime);
+			animator.Play ("Hurt", -1, 0f);
+			animator.SetBool ("Hurt", true);
+			animator.SetInteger ("Health", hp);
+			rb.velocity = Vector2.zero;
+			animator.SetFloat ("SpeedAbsX", 0);
+
+			if (hp == 0)
+				status = Status.Dying;
+			else
+				status = Status.Hurting;
 		}
 	}
 
