@@ -92,6 +92,11 @@ public class TrexEnemyScript : BaseEnemyScript {
 			this.canDisableInstance = false;
 	}
 
+	void OnCollisionEnter2D(Collision2D col) {
+		if (col.gameObject.tag == "Enemy")
+			ChangeDirection ();
+	}
+
 	void OnTriggerExit2D(Collider2D col) {
 		if (col.tag == "AliveArea")
 			this.canDisableInstance = true;

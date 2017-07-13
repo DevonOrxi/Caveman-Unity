@@ -10,10 +10,9 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D rb;
 	private SpriteRenderer sr;
 	private bool isGrounded = false;
-	private bool isFirstAttackFrame = false;
-	private bool isDamaged = false;
-	private Status status = Status.Idle;
-	private int hp = 3;
+	private bool invuln = false;
+	public bool isDamaged = false;
+	public int hp = 3;
 
 	public GameObject[] feetRef;
 	public GameObject bonePrefab;
@@ -31,13 +30,14 @@ public class PlayerController : MonoBehaviour {
 			Jump ();
 			Attack ();
 		}
+		animator.SetFloat ("SpeedY", rb.velocity.y);
 	}
 
 	void FixedUpdate() {
 		if (!isDamaged) {
 			HorizontalMovement ();
-			CheckGrounded ();
 		}
+		CheckGrounded ();
 		CheckFacing ();
 	}
 
@@ -48,18 +48,13 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void Attack() {
-		if (Input.GetKeyDown (KeyCode.X)) {
-			isFirstAttackFrame = true;
+		if (Input.GetKeyDown (KeyCode.X))
 			animator.SetBool ("FirstAttackFrame", true);
-		}
 	}
 
 	void Jump() {
-		if (Input.GetKeyDown (KeyCode.Z) && isGrounded) {
+		if (Input.GetKeyDown (KeyCode.Z) && isGrounded)
 			rb.AddForce (Globals.jumpForce * Vector2.up);
-		}
-
-		animator.SetFloat ("SpeedY", rb.velocity.y);
 	}
 
 	void HorizontalMovement() {
@@ -71,7 +66,6 @@ public class PlayerController : MonoBehaviour {
 			resultantX -= Globals.playerSpeedX;
 
 		resultantX *= Time.deltaTime;
-
 		rb.velocity = new Vector2 (resultantX, rb.velocity.y);
 		
 		animator.SetFloat ("SpeedAbsX", Mathf.Abs(resultantX));
@@ -82,10 +76,8 @@ public class PlayerController : MonoBehaviour {
 
 		for (int i = 0; i < feetRef.Length; i++) {
 			RaycastHit2D rh = Physics2D.Raycast (feetRef [i].transform.position, Vector2.down, 0.05f, 1 << 10);
-
-			if (rh.collider != null) {
+			if (rh.collider != null)
 				isGrounded = true;
-			}
 		}
 
 		if (isGrounded)
@@ -103,7 +95,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D col) {
-		if (col.gameObject.tag == "Enemy") {
+		if (col.gameObject.tag == "Enemy" && !isDamaged && !invuln) {
+			invuln = true;
 
 			//	Meter esto en otra función
 			//	Usar Transform del collider
@@ -129,50 +122,41 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void HurtLogic(Vector2 rf) {
-		if (hp >= 0 && !isDamaged) {
+		if (hp >= 0) {
 			hp--;
 			isDamaged = true;
 			animator.SetBool ("IsDamaged", true);
 
-			blinkCoroutine = Blink (Globals.hurtTime);
-			StartCoroutine(blinkCoroutine);
-
+			rb.velocity = Vector2.zero;
 			rb.AddForce(rf.normalized * Globals.recoilForce);
-
-			Invoke ("StopHurting", Globals.hurtTime);
-			animator.Play ("Hurt", -1, 0f);
-			animator.SetBool ("Hurt", true);
-			animator.SetInteger ("Health", hp);
 			rb.velocity = Vector2.zero;
 			animator.SetFloat ("SpeedAbsX", 0);
 
-			if (hp == 0)
-				status = Status.Dying;
-			else
-				status = Status.Hurting;
+			blinkCoroutine = Blink (Globals.hurtTime, (hp > 0) ? Globals.invulTime : 0);
+			StartCoroutine(blinkCoroutine);
 		}
 	}
 
-	private IEnumerator Blink(float waitTime) {
-		float endTime = Time.time + waitTime;
+	private IEnumerator Blink(float blinkTime, float invulTime) {
+		float endTime = Time.time + blinkTime + invulTime;
+		Invoke ("ResumePlayerControl", blinkTime);
 		while (Time.time < endTime) {
 			sr.enabled = false;
 			yield return new WaitForSeconds (0.08f);
 			sr.enabled = true;
 			yield return new WaitForSeconds (0.08f);
 		}
-	}
-
-	void StopHurting() {
-		if (hp > 0) {
-			isDamaged = false;
-			animator.SetBool ("IsDamaged", false);
-		} else {
-			animator.SetBool ("IsDying", true);
-		}
+		invuln = false;
 	}
 
 	void LoseLife() {
 		SceneManager.LoadScene ("GameOver");
+	}
+
+	void ResumePlayerControl() {
+		isDamaged = false;
+		animator.SetBool ("IsDamaged", false);
+		if (hp <= 0)
+			animator.SetBool ("IsDying", true);
 	}
 }

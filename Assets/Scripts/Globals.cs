@@ -11,4 +11,5 @@ public class Globals  {
 	static readonly public float boneForceX = 120f;
 	static readonly public float boneTorque = 1000f;
 	static readonly public float hurtTime = 0.8f;
+	static readonly public float invulTime = 1.5f;
 }

@@ -7,7 +7,6 @@ public enum Status {
 	Idle,
 	Attacking,
 	Jumping,
-	Falling,
 	Hurting,
 	Dying,
 	Dead
